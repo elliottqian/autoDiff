@@ -536,6 +536,10 @@ class Executor:
         return node_val_results
 
 
+
+def gradients_study(output_node, node_list):
+    pass
+
 def gradients(output_node, node_list):
     """Take gradient of output node with respect to each node in node_list.
 
@@ -556,19 +560,28 @@ def gradients(output_node, node_list):
     # We are really taking a derivative of the scalar reduce_sum(output_node)
     # instead of the vector output_node. But this is the common case for loss function.
     node_to_output_grads_list[output_node] = [oneslike_op(output_node)]
+    print(node_to_output_grads_list)
     # a map from node to the gradient of that node
     node_to_output_grad = {}
     # Traverse graph in reverse topological order given the output_node that we are taking gradient wrt.
     reverse_topo_order = reversed(find_topo_sort([output_node]))
+    print("reverse_topo_order")
 
     for node in reverse_topo_order:
+        print("=======reverse_topo_order=======")
+        print(node)
         grad = sum_node_list(node_to_output_grads_list[node])
+        print(grad)
         node_to_output_grad[node] = grad
         for i in range(len(node.inputs)):
             ch = node.inputs[i]
+            print("---------ch--------" + str(i))
+            print(ch)
             grads = node.op.gradient(node, grad)
-            grads_list = node_to_output_grads_list.get(ch, [])
+            print(len(grads))
+            grads_list = node_to_output_grads_list.get(ch, [])   # 找不到就返回 []  空列表
             grads_list.append(grads[i])
+            print(grads_list[0])
             node_to_output_grads_list[ch] = grads_list
 
     # Collect results for gradients requested.
@@ -588,21 +601,28 @@ def find_topo_sort(node_list):
     after all its predecessors are traversed due to post-order DFS, we get a topological
     sort.
 
+        输入最后一个节点, 然后返回所有节点的拓扑排序
     """
+    print("---------find_topo_sort-------------")
     visited = set()
     topo_order = []
     for node in node_list:
+        print(node)
         topo_sort_dfs(node, visited, topo_order)
+
     return topo_order
 
 
 def topo_sort_dfs(node, visited, topo_order):
     """Post-order DFS"""
+    print("--------topo_sort_dfs-------------")
     if node in visited:
         return
     visited.add(node)
     for n in node.inputs:
         topo_sort_dfs(n, visited, topo_order)
+    print("---------topo_sort_dfs is over-------------")
+    print(node)
     topo_order.append(node)
 
 
