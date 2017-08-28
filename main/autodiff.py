@@ -73,7 +73,10 @@ class Node(object):
     __rmul__ = __mul__
 
     def __str__(self):
-        """Allow print to display node name.""" 
+        """
+            Allow print to display node name.
+            相当于tostring 的方法
+        """
         return self.name
 
 
@@ -537,9 +540,6 @@ class Executor:
 
 
 
-def gradients_study(output_node, node_list):
-    pass
-
 def gradients(output_node, node_list):
     """Take gradient of output node with respect to each node in node_list.
 
@@ -577,6 +577,7 @@ def gradients(output_node, node_list):
             ch = node.inputs[i]
             print("---------ch--------" + str(i))
             print(ch)
+            # 返回每个节点对应的导数
             grads = node.op.gradient(node, grad)
             print(len(grads))
             grads_list = node_to_output_grads_list.get(ch, [])   # 找不到就返回 []  空列表
@@ -595,7 +596,9 @@ def gradients(output_node, node_list):
 
 def find_topo_sort(node_list):
     """Given a list of nodes, return a topological sort list of nodes ending in them.
-    
+
+    深度优先  后续遍历
+    某种时候, 他们是等价的
     A simple algorithm is to do a post-order DFS traversal on the given nodes, 
     going backwards based on input edges. Since a node is added to the ordering
     after all its predecessors are traversed due to post-order DFS, we get a topological
@@ -621,13 +624,17 @@ def topo_sort_dfs(node, visited, topo_order):
     visited.add(node)
     for n in node.inputs:
         topo_sort_dfs(n, visited, topo_order)
+        # 先深度遍历  后插入  然后就可以了
     print("---------topo_sort_dfs is over-------------")
     print(node)
     topo_order.append(node)
 
 
 def sum_node_list(node_list):
-    """Custom sum function in order to avoid create redundant nodes in Python sum implementation."""
+    """
+        Custom sum function in order to avoid create redundant nodes in Python sum implementation.
+        这里的运算符也被重载了
+    """
     from operator import add
     from functools import reduce
     return reduce(add, node_list)
