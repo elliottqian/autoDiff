@@ -6,7 +6,8 @@
 """
 import codecs
 
-def getLabelAndFeature(path="E:\\CloudMusicProject\\autoDiff\\myself\\x"):
+
+def get_label_and_feature(path="E:\\CloudMusicProject\\autoDiff\\myself\\x"):
     labels = []
     features = []
     with codecs.open(path) as f:
@@ -34,7 +35,12 @@ def getLabelAndFeature(path="E:\\CloudMusicProject\\autoDiff\\myself\\x"):
 
 
 if __name__ == "__main__":
-    getLabelAndFeature()
+    l, f = get_label_and_feature()
+
+    import myself.fm as fm
+    fm.gradient_s(10, f, l)
+
+
     pass
 
 
