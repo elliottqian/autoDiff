@@ -9,7 +9,7 @@ import random
 import numpy as np
 
 
-def get_label_and_feature(path="E:\\CloudMusicProject\\autoDiff\\myself\\x"):
+def get_label_and_feature(path="E:\\CloudMusicProject\\autoDiff\\myself\\x2"):
     labels = []
     features = []
     df = []
@@ -20,7 +20,8 @@ def get_label_and_feature(path="E:\\CloudMusicProject\\autoDiff\\myself\\x"):
             feature = [float(x) for x in lines[1]]
             if label < 2:
                 df.append((label, feature))
-    random.shuffle(df)  # 打乱列表
+    #random.seed = 10
+    #random.shuffle(df)  # 打乱列表
     return df
 
 ###################
@@ -31,8 +32,9 @@ def get_label_and_feature(path="E:\\CloudMusicProject\\autoDiff\\myself\\x"):
 class LR(object):
 
     def __init__(self, x_dim=1):
+        np.random.seed(10)
         self.w = np.random.random((x_dim,)) - 0.5
-        self.b = 0
+        self.b = 0.5
         self.data = None
         pass
 
@@ -62,18 +64,16 @@ class LR(object):
         print("b:" + str(self.b))
 
     def grad_ceshi(self, x, y, index):
-        x = np.array(x)
         print("根据定义算出来的梯度")
-        dw = 0.1
+        dw = 0.00001
         predict_y = self.get_predict(x)
         p = self.get_loss(y, predict_y)
-        print(p)
+        print("损失:" + str(p))
         self.w[index] += dw
-        print(self.w[index])
         predict_y_new = self.get_predict(x)
         new_p = self.get_loss(y, predict_y_new)
-        print(new_p)
-        print(new_p - p)
+        print("新损失" + str(new_p))
+        # print(new_p - p)
         dp_dx = (new_p - p) / dw
         print(dp_dx)
 
@@ -91,7 +91,9 @@ class LR(object):
             predict_y = 0.999
         elif predict_y < 0.001:
             predict_y = 0.001
-        l = y * np.log(predict_y) * (1 - y) + np.log(1 - predict_y)
+        # print("y * np.log(predict_y)  " + str(y * np.log(predict_y)))
+        # print("(1 - y) + np.log(1 - predict_y)  " + str((1 - y) * np.log(1 - predict_y)))
+        l = y * np.log(predict_y) + (1 - y) * np.log(1 - predict_y)
         return - l
 
     @staticmethod
@@ -144,9 +146,7 @@ class TrainLR(object):
         loss = 0.0
         for d in self.data:
             y, x = d
-            y_predict = float(self.lr_model.get_predict(x))
-            # print(y)
-            # print(self.lr_model.get_loss(y, y_predict))
+            y_predict = self.lr_model.get_predict(x)
             loss += self.lr_model.get_loss(y, y_predict)
         return loss
 ###################
@@ -168,16 +168,40 @@ if __name__ == "__main__":
     tlr.init_lr_model()
 
     print(tlr.lr_model.w)
+    y, x = df[4]
+    print(y, x)
+    print(tlr.lr_model.get_z(x))
+    pr = tlr.lr_model.get_predict(x)
+    print(pr)
+    loss = tlr.lr_model.get_loss(y, pr)
+    print(loss)
+    # 上面正确
 
-    y, x = df[0]
-    tlr.lr_model.grad_ceshi(x, y, 5)
 
-    # tlr.train(1, 0.5)
-    # print(tlr.get_loss())
+
+
+    print("测试哦")
+    # tlr.lr_model.grad_ceshi(x, y, 0)
+
     #
-    # tlr.train(1, 0.5)
-    # print(tlr.get_loss())
+    # tlr.lr_model.grad_ceshi(x, y, 5)
 
+    tlr.train(1, 0.5)
+    tlr.lr_model.print_parm()
+
+    print(tlr.get_loss())
+
+    tlr.train(1, 0.5)
+    tlr.lr_model.print_parm()
+    print(tlr.get_loss())
+
+    tlr.train(1, 0.5)
+    tlr.lr_model.print_parm()
+    print(tlr.get_loss())
+
+    tlr.train(1, 0.5)
+    tlr.lr_model.print_parm()
+    print(tlr.get_loss())
     pass
 
 
