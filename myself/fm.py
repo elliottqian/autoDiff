@@ -13,7 +13,6 @@ def get_z(w0, w, v, x):
     :param x:  向量
     :return:
     """
-
     sum = 0.0
     m, n = v.shape
     for i in range(m):
