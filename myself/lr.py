@@ -9,7 +9,7 @@ import random
 import numpy as np
 
 
-def get_label_and_feature(path="E:\\CloudMusicProject\\autoDiff\\myself\\x2"):
+def get_label_and_feature(path="E:\\CloudMusicProject\\autoDiff\\myself\\x"):
     labels = []
     features = []
     df = []
@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
     for i in range(1000):
         tlr.train(1, 0.05)
-        tlr.lr_model.print_parm()
+        # tlr.lr_model.print_parm()
         print(tlr.get_loss())
 
 
