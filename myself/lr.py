@@ -53,6 +53,8 @@ class LR(object):
         temp = self.get_predict(x) - y
         grad_w = temp * self.get_dz_dw(x)
         grad_b = temp * self.get_dz_db()
+        grad_ceshi1 = self.grad_ceshi(x, y, 0)
+        grad_ceshi2 = self.grad_ceshi(x, y, 1)
         return grad_w, grad_b
 
     def update_w_b(self, grad_w, grad_b, step_size):
@@ -64,33 +66,33 @@ class LR(object):
         print("b:" + str(self.b))
 
     def grad_ceshi(self, x, y, index):
-        print("根据定义算出来的梯度")
+        # print("根据定义算出来的梯度")
         dw = 0.00001
         predict_y = self.get_predict(x)
         p = self.get_loss(y, predict_y)
-        print("损失:" + str(p))
+        # print("损失:" + str(p))
         self.w[index] += dw
         predict_y_new = self.get_predict(x)
         new_p = self.get_loss(y, predict_y_new)
-        print("新损失" + str(new_p))
+        # print("新损失" + str(new_p))
         # print(new_p - p)
         dp_dx = (new_p - p) / dw
-        print(dp_dx)
-
-        print("根据公式算出来的梯度")
+        # print(dp_dx)
         self.w[index] -= dw
-        dw, db = self.get_grad_w_and_b(x, y)
-        dp_dx = dw[index]
-        print(dp_dx)
+        return dp_dx
 
-
+        # print("根据公式算出来的梯度")
+        # self.w[index] -= dw
+        # dw, db = self.get_grad_w_and_b(x, y)
+        # dp_dx = dw[index]
+        # print(dp_dx)
 
     @staticmethod
     def get_loss(y, predict_y):
-        if predict_y > 0.999:
-            predict_y = 0.999
-        elif predict_y < 0.001:
-            predict_y = 0.001
+        if predict_y > 0.99999:
+            predict_y = 0.99999
+        elif predict_y < 0.00001:
+            predict_y = 0.00001
         # print("y * np.log(predict_y)  " + str(y * np.log(predict_y)))
         # print("(1 - y) + np.log(1 - predict_y)  " + str((1 - y) * np.log(1 - predict_y)))
         l = y * np.log(predict_y) + (1 - y) * np.log(1 - predict_y)
@@ -138,8 +140,8 @@ class TrainLR(object):
         for d in self.data:
             y, x = d
             gw, gb = self.lr_model.get_grad_w_and_b(x, y)
-            grad_b -= gb
-            grad_w -= gw
+            grad_b += gb
+            grad_w += gw
         return grad_w, grad_b
 
     def get_loss(self):
@@ -148,6 +150,7 @@ class TrainLR(object):
             y, x = d
             y_predict = self.lr_model.get_predict(x)
             loss += self.lr_model.get_loss(y, y_predict)
+        print("损失")
         return loss
 ###################
 #    softMax      #
@@ -168,7 +171,7 @@ if __name__ == "__main__":
     tlr.init_lr_model()
 
     print(tlr.lr_model.w)
-    y, x = df[4]
+    y, x = df[1]
     print(y, x)
     print(tlr.lr_model.get_z(x))
     pr = tlr.lr_model.get_predict(x)
@@ -186,22 +189,12 @@ if __name__ == "__main__":
     #
     # tlr.lr_model.grad_ceshi(x, y, 5)
 
-    tlr.train(1, 0.5)
-    tlr.lr_model.print_parm()
+    for i in range(1000):
+        tlr.train(1, 0.05)
+        tlr.lr_model.print_parm()
+        print(tlr.get_loss())
 
-    print(tlr.get_loss())
 
-    tlr.train(1, 0.5)
-    tlr.lr_model.print_parm()
-    print(tlr.get_loss())
-
-    tlr.train(1, 0.5)
-    tlr.lr_model.print_parm()
-    print(tlr.get_loss())
-
-    tlr.train(1, 0.5)
-    tlr.lr_model.print_parm()
-    print(tlr.get_loss())
     pass
 
 
